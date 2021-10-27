@@ -9,25 +9,26 @@ import appeng.api.config.PowerMultiplier;
 import appeng.api.config.SecurityPermissions;
 import appeng.core.AEConfig;
 import appeng.core.localization.PlayerMessages;
-import appeng.helpers.WirelessTerminalGuiObject;
+import appeng.helpers.WirelessCraftingTerminalGuiObject;
 import appeng.menu.implementations.MenuTypeBuilder;
 
 public class WirelessCraftingTermMenu extends CraftingTermMenu {
 
-    public static final MenuType<CraftingTermMenu> TYPE = MenuTypeBuilder
-            .create(CraftingTermMenu::new, WirelessTerminalGuiObject.class)
+    public static final MenuType<WirelessCraftingTermMenu> TYPE = MenuTypeBuilder
+            .create(WirelessCraftingTermMenu::new, WirelessCraftingTerminalGuiObject.class)
             .requirePermission(SecurityPermissions.CRAFT)
             .build("wirelesscraftingterm");
-    private final WirelessTerminalGuiObject wirelessTerminalGUIObject;
+    private final WirelessCraftingTerminalGuiObject wirelessTerminalGUIObject;
     private int ticks = 0;
     private double powerMultiplier = 0.5;
     private final int slot;
 
-    public WirelessCraftingTermMenu(int id, final Inventory ip, final WirelessTerminalGuiObject monitorable) {
+    public WirelessCraftingTermMenu(int id, final Inventory ip, final WirelessCraftingTerminalGuiObject monitorable) {
         super(TYPE, id, ip, monitorable, false);
+        this.slot = monitorable.getInventorySlot();
+        this.lockPlayerInventorySlot(this.slot);
         this.createPlayerInventorySlots(ip);
         this.wirelessTerminalGUIObject = monitorable;
-        this.slot = monitorable.getInventorySlot();
     }
 
     @Override

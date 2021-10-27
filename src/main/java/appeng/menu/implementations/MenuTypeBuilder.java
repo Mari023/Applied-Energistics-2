@@ -47,6 +47,7 @@ import appeng.api.parts.IPartHost;
 import appeng.core.AELog;
 import appeng.core.AppEng;
 import appeng.helpers.ICustomNameObject;
+import appeng.helpers.WirelessCraftingTerminalGuiObject;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.menu.AEBaseMenu;
 import appeng.menu.MenuLocator;
@@ -266,6 +267,14 @@ public final class MenuTypeBuilder<M extends AEBaseMenu, I> {
             IGuiItemObject guiObject = guiItem.getGuiObject(it, locator.getItemIndex(), player.level, blockPos);
             if (hostInterface.isInstance(guiObject)) {
                 return hostInterface.cast(guiObject);
+            }
+        }
+
+        if (hostInterface.isAssignableFrom(WirelessCraftingTerminalGuiObject.class)) {
+            var wh = WirelessTerminals.get(it.getItem());
+            if (wh != null) {
+                return hostInterface
+                        .cast(new WirelessCraftingTerminalGuiObject(wh, it, player, locator.getItemIndex()));
             }
         }
 

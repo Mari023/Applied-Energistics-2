@@ -71,6 +71,7 @@ import appeng.client.gui.me.interfaceterminal.InterfaceTerminalScreen;
 import appeng.client.gui.me.items.CraftingTermScreen;
 import appeng.client.gui.me.items.ItemTerminalScreen;
 import appeng.client.gui.me.items.PatternTermScreen;
+import appeng.client.gui.me.items.WirelessCraftingTermScreen;
 import appeng.client.gui.me.networktool.NetworkStatusScreen;
 import appeng.client.gui.me.networktool.NetworkToolScreen;
 import appeng.client.gui.style.ScreenStyle;
@@ -110,11 +111,7 @@ import appeng.menu.me.crafting.CraftConfirmMenu;
 import appeng.menu.me.crafting.CraftingCPUMenu;
 import appeng.menu.me.crafting.CraftingStatusMenu;
 import appeng.menu.me.fluids.FluidTerminalMenu;
-import appeng.menu.me.items.CraftingTermMenu;
-import appeng.menu.me.items.ItemTerminalMenu;
-import appeng.menu.me.items.MEPortableCellMenu;
-import appeng.menu.me.items.PatternTermMenu;
-import appeng.menu.me.items.WirelessTermMenu;
+import appeng.menu.me.items.*;
 import appeng.menu.me.networktool.NetworkStatusMenu;
 import appeng.menu.me.networktool.NetworkToolMenu;
 
@@ -191,6 +188,10 @@ public final class InitScreens {
         register(
                 CraftingTermMenu.TYPE,
                 CraftingTermScreen::new,
+                "/screens/terminals/crafting_terminal.json");
+        register(
+                WirelessCraftingTermMenu.TYPE,
+                WirelessCraftingTermScreen::new,
                 "/screens/terminals/crafting_terminal.json");
         register(
                 PatternTermMenu.TYPE,
