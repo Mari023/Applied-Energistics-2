@@ -20,6 +20,7 @@ package appeng.items.tools.powered;
 
 import java.util.List;
 import java.util.OptionalLong;
+import java.util.function.DoubleSupplier;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -30,24 +31,21 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 
-import appeng.api.config.Actionable;
-import appeng.api.config.Settings;
-import appeng.api.config.SortDir;
-import appeng.api.config.SortOrder;
-import appeng.api.config.ViewItems;
+import appeng.api.config.*;
 import appeng.api.features.IGridLinkableHandler;
 import appeng.api.features.IWirelessTerminalHandler;
 import appeng.api.features.WirelessTerminals;
 import appeng.api.util.IConfigManager;
-import appeng.core.AEConfig;
 import appeng.core.localization.GuiText;
 import appeng.hooks.ICustomReequipAnimation;
 import appeng.items.tools.powered.powersink.AEBasePoweredItem;
+import appeng.menu.me.items.WirelessTermMenu;
 import appeng.util.ConfigManager;
 
 public class WirelessTerminalItem extends AEBasePoweredItem implements ICustomReequipAnimation {
@@ -58,8 +56,8 @@ public class WirelessTerminalItem extends AEBasePoweredItem implements ICustomRe
 
     private static final String TAG_GRID_KEY = "gridKey";
 
-    public WirelessTerminalItem(Item.Properties props) {
-        super(AEConfig.instance().getWirelessTerminalBattery(), props);
+    public WirelessTerminalItem(final DoubleSupplier powerCapacity, Item.Properties props) {
+        super(powerCapacity, props);
     }
 
     @Override
@@ -91,6 +89,10 @@ public class WirelessTerminalItem extends AEBasePoweredItem implements ICustomRe
         }
     }
 
+    public MenuType<?> getMenuType() {
+        return WirelessTermMenu.TYPE;
+    }
+
     @Override
     public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
         return slotChanged;
@@ -117,7 +119,7 @@ public class WirelessTerminalItem extends AEBasePoweredItem implements ICustomRe
         }
 
         @Override
-        public IConfigManager getConfigManager(final ItemStack target) {
+        public IConfigManager getConfigManager(final ItemStack target) {//TODO maybe provide an easy way for other Terminals to overwrite this without making their own IWirelessTerminalHandler that mostly copies this one
             var out = new ConfigManager((manager, settingName) -> {
                 manager.writeToNBT(target.getOrCreateTag());
             });
