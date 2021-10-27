@@ -119,7 +119,10 @@ public class WirelessTerminalItem extends AEBasePoweredItem implements ICustomRe
         }
 
         @Override
-        public IConfigManager getConfigManager(final ItemStack target) {//TODO maybe provide an easy way for other Terminals to overwrite this without making their own IWirelessTerminalHandler that mostly copies this one
+        public IConfigManager getConfigManager(final ItemStack target) {// TODO maybe provide an easy way for other
+                                                                        // Terminals to overwrite this without making
+                                                                        // their own IWirelessTerminalHandler that
+                                                                        // mostly copies this one
             var out = new ConfigManager((manager, settingName) -> {
                 manager.writeToNBT(target.getOrCreateTag());
             });
