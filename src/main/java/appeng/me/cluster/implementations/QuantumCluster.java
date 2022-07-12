@@ -32,21 +32,19 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import appeng.api.exceptions.FailedConnectionException;
 import appeng.api.features.Locatables;
-import appeng.api.networking.GridHelper;
 import appeng.api.networking.IGridNode;
-import appeng.api.networking.security.IActionHost;
 import appeng.blockentity.qnb.QuantumBridgeBlockEntity;
 import appeng.core.AELog;
+import appeng.helpers.QuantumHost;
 import appeng.me.cluster.IAECluster;
 import appeng.me.cluster.MBCalculator;
 import appeng.me.service.helpers.ConnectionWrapper;
 import appeng.util.iterators.ChainedIterator;
 
-public class QuantumCluster implements IAECluster, IActionHost {
+public class QuantumCluster implements IAECluster, QuantumHost {
 
-    private static final Set<QuantumCluster> ACTIVE_CLUSTERS = new HashSet<>();
+    public static final Set<QuantumHost> ACTIVE_CLUSTERS = new HashSet<>();
 
     static {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
@@ -54,7 +52,7 @@ public class QuantumCluster implements IAECluster, IActionHost {
         });
         ServerWorldEvents.UNLOAD.register((server, level) -> {
             var iteration = new ArrayList<>(ACTIVE_CLUSTERS);
-            for (QuantumCluster activeCluster : iteration) {
+            for (QuantumHost activeCluster : iteration) {
                 activeCluster.onUnload(level);
             }
         });
@@ -77,7 +75,7 @@ public class QuantumCluster implements IAECluster, IActionHost {
         this.setRing(new QuantumBridgeBlockEntity[8]);
     }
 
-    private void onUnload(ServerLevel level) {
+    public void onUnload(ServerLevel level) {
         if (this.center.getLevel() == level) {
             this.setUpdateStatus(false);
             this.destroy();
@@ -86,104 +84,28 @@ public class QuantumCluster implements IAECluster, IActionHost {
 
     @Override
     public void updateStatus(boolean updateGrid) {
-
-        final long qe = this.center.getQEFrequency();
-
-        if (this.thisSide != qe && this.thisSide != -qe) {
-            if (qe != 0) {
-                if (this.thisSide != 0) {
-                    Locatables.quantumNetworkBridges().unregister(center.getLevel(), getLocatableKey());
-                }
-
-                if (this.canUseNode(-qe)) {
-                    this.otherSide = qe;
-                    this.thisSide = -qe;
-                } else if (this.canUseNode(qe)) {
-                    this.thisSide = qe;
-                    this.otherSide = -qe;
-                }
-
-                Locatables.quantumNetworkBridges().register(center.getLevel(), getLocatableKey(), this);
-            } else {
-                Locatables.quantumNetworkBridges().unregister(center.getLevel(), getLocatableKey());
-
-                this.otherSide = 0;
-                this.thisSide = 0;
-            }
-        }
-
-        var myOtherSide = this.otherSide == 0 ? null
-                : Locatables.quantumNetworkBridges().get(center.getLevel(), this.otherSide);
-
-        boolean shutdown = false;
-
-        if (myOtherSide instanceof QuantumCluster sideB) {
-            var sideA = this;
-
-            if (sideA.isActive() && sideB.isActive()) {
-                if (this.connection != null && this.connection.getConnection() != null) {
-                    final IGridNode a = this.connection.getConnection().a();
-                    final IGridNode b = this.connection.getConnection().b();
-                    final IGridNode sa = sideA.getNode();
-                    final IGridNode sb = sideB.getNode();
-                    if ((a == sa || b == sa) && (a == sb || b == sb)) {
-                        return;
-                    }
-                }
-
-                try {
-                    if (sideA.connection != null && sideA.connection.getConnection() != null) {
-                        sideA.connection.getConnection().destroy();
-                        sideA.connection = new ConnectionWrapper(null);
-                    }
-
-                    if (sideB.connection != null && sideB.connection.getConnection() != null) {
-                        sideB.connection.getConnection().destroy();
-                        sideB.connection = new ConnectionWrapper(null);
-                    }
-
-                    sideA.connection = sideB.connection = new ConnectionWrapper(
-                            GridHelper.createGridConnection(sideA.getNode(), sideB.getNode()));
-                } catch (FailedConnectionException e) {
-                    // :(
-                    AELog.debug(e);
-                }
-            } else {
-                shutdown = true;
-            }
-        } else {
-            shutdown = true;
-        }
-
-        if (shutdown && this.connection != null && this.connection.getConnection() != null) {
-            this.connection.getConnection().destroy();
-            this.connection.setConnection(null);
-            this.connection = new ConnectionWrapper(null);
-        }
+        link();
     }
 
-    private boolean canUseNode(long qe) {
-        var locatable = Locatables.quantumNetworkBridges().get(center.getLevel(), qe);
-        if (locatable instanceof QuantumCluster qc) {
-            var level = qc.center.getLevel();
-            if (!qc.isDestroyed) {
-                // In future versions, we might actually want to delay the entire registration
-                // until the center
-                // block entity begins ticking normally.
-                if (level.hasChunkAt(qc.center.getBlockPos())) {
-                    final Level cur = level.getServer().getLevel(level.dimension());
+    public boolean canUseThisNode(long qe) {
+        var level = this.center.getLevel();
+        if (!this.isDestroyed) {
+            // In future versions, we might actually want to delay the entire registration
+            // until the center
+            // block entity begins ticking normally.
+            if (level.hasChunkAt(this.center.getBlockPos())) {
+                final Level cur = level.getServer().getLevel(level.dimension());
 
-                    final BlockEntity te = level.getBlockEntity(qc.center.getBlockPos());
-                    return te != qc.center || level != cur;
-                } else {
-                    AELog.warn("Found a registered QNB with serial %s whose chunk seems to be unloaded: %s", qe, qc);
-                }
+                final BlockEntity te = level.getBlockEntity(this.center.getBlockPos());
+                return te != this.center || level != cur;
+            } else {
+                AELog.warn("Found a registered QNB with serial %s whose chunk seems to be unloaded: %s", qe, this);
             }
         }
         return true;
     }
 
-    private boolean isActive() {
+    public boolean isActive() {
         if (this.isDestroyed || !this.registered) {
             return false;
         }
@@ -191,7 +113,7 @@ public class QuantumCluster implements IAECluster, IActionHost {
         return this.center.isPowered() && this.hasQES();
     }
 
-    private IGridNode getNode() {
+    public IGridNode getNode() {
         return this.center.getGridNode();
     }
 
@@ -230,7 +152,7 @@ public class QuantumCluster implements IAECluster, IActionHost {
 
             if (this.thisSide != 0) {
                 this.updateStatus(true);
-                Locatables.quantumNetworkBridges().unregister(center.getLevel(), getLocatableKey());
+                Locatables.quantumNetworkBridges().unregister(center.getLevel(), getThisSide());
             }
 
             this.center.updateStatus(null, (byte) -1, this.isUpdateStatus());
@@ -255,10 +177,6 @@ public class QuantumCluster implements IAECluster, IActionHost {
     public boolean isCorner(QuantumBridgeBlockEntity quantumBridge) {
         return this.getRing()[0] == quantumBridge || this.getRing()[2] == quantumBridge
                 || this.getRing()[4] == quantumBridge || this.getRing()[6] == quantumBridge;
-    }
-
-    private long getLocatableKey() {
-        return this.thisSide;
     }
 
     public QuantumBridgeBlockEntity getCenter() {
@@ -305,4 +223,35 @@ public class QuantumCluster implements IAECluster, IActionHost {
         return center.getMainNode().getNode();
     }
 
+    public ConnectionWrapper getConnection() {
+        return connection;
+    }
+
+    public void setConnection(ConnectionWrapper connection) {
+        this.connection = connection;
+    }
+
+    public long getFrequency() {
+        return center.getQEFrequency();
+    }
+
+    public long getThisSide() {
+        return thisSide;
+    }
+
+    public long getOtherSide() {
+        return otherSide;
+    }
+
+    public void setThisSide(long frequency) {
+        thisSide = frequency;
+    }
+
+    public void setOtherSide(long frequency) {
+        otherSide = frequency;
+    }
+
+    public Level getLevel() {
+        return center.getLevel();
+    }
 }
