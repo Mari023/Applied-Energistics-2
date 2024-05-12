@@ -24,11 +24,14 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 
+import appeng.api.ids.AEComponents;
 import appeng.api.util.AEColor;
 import appeng.block.networking.EnergyCellBlockItem;
 import appeng.core.AppEng;
 import appeng.core.definitions.AEItems;
+import appeng.items.tools.powered.AbstractPortableCell;
 import appeng.items.tools.powered.ColorApplicatorItem;
+import appeng.items.tools.powered.WirelessTerminalItem;
 
 /**
  * Registers custom properties that can be used in item model JSON files.
@@ -38,6 +41,8 @@ public final class InitItemModelsProperties {
 
     public static final ResourceLocation COLORED_PREDICATE_ID = AppEng.makeId("colored");
     public static final ResourceLocation ENERGY_FILL_LEVEL_ID = AppEng.makeId("fill_level");
+    public static final ResourceLocation COLOR_ID = AppEng.makeId("color");
+    public static final ResourceLocation LED_STATUS_ID = AppEng.makeId("led_status");
 
     private InitItemModelsProperties() {
     }
@@ -56,17 +61,28 @@ public final class InitItemModelsProperties {
 
         // Register the client-only item model property for energy cells
         BuiltInRegistries.ITEM.forEach(item -> {
-            if (!(item instanceof EnergyCellBlockItem energyCell)) {
-                return;
+            switch (item) {
+                case EnergyCellBlockItem energyCell -> ItemProperties.register(energyCell, ENERGY_FILL_LEVEL_ID,
+                        (is, level, entity, seed) -> {
+                            double curPower = energyCell.getAECurrentPower(is);
+                            double maxPower = energyCell.getAEMaxPower(is);
+
+                            return (float) (curPower / maxPower);
+                        });
+                case WirelessTerminalItem wirelessTerminal -> {
+                    ItemProperties.register(wirelessTerminal, COLOR_ID, (stack, level, entity, seed) -> stack
+                            .getOrDefault(AEComponents.COLOR, AEColor.TRANSPARENT).ordinal());
+                    ItemProperties.register(wirelessTerminal, LED_STATUS_ID, (stack, level, entity,
+                            seed) -> stack.has(AEComponents.WIRELESS_TERMINAL_DISCONNECTED) ? 0 : 1);
+                }
+                case AbstractPortableCell portableCell -> ItemProperties.register(portableCell, COLOR_ID, (stack, level,
+                        entity, seed) -> stack.getOrDefault(AEComponents.COLOR, AEColor.TRANSPARENT).ordinal());
+                default -> {
+                }
             }
 
-            ItemProperties.register(energyCell, ENERGY_FILL_LEVEL_ID,
-                    (is, level, entity, seed) -> {
-                        double curPower = energyCell.getAECurrentPower(is);
-                        double maxPower = energyCell.getAEMaxPower(is);
-
-                        return (float) (curPower / maxPower);
-                    });
+            ItemProperties.register(AEItems.NETWORK_TOOL.asItem(), COLOR_ID, (stack, level, entity, seed) -> stack
+                    .getOrDefault(AEComponents.COLOR, AEColor.TRANSPARENT).ordinal());
         });
     }
 

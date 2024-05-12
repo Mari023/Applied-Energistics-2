@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Maps;
+import com.mojang.datafixers.util.Unit;
 import com.mojang.serialization.Codec;
 
 import org.jetbrains.annotations.ApiStatus;
@@ -28,6 +29,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.network.codec.NeoForgeStreamCodecs;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import appeng.api.config.FuzzyMode;
@@ -345,6 +347,12 @@ public final class AEComponents {
 
     public static final DataComponentType<String> MISSING_CONTENT_ERROR = register("missing_content_error",
             builder -> builder.persistent(Codec.STRING).networkSynchronized(ByteBufCodecs.STRING_UTF8));
+
+    public static final DataComponentType<AEColor> COLOR = register("color",
+            builder -> builder.persistent(AEColor.CODEC).networkSynchronized(AEColor.STREAM_CODEC));
+    public static final DataComponentType<Unit> WIRELESS_TERMINAL_DISCONNECTED = register(
+            "wireless_terminal_disconnected",
+            builder -> builder.networkSynchronized(NeoForgeStreamCodecs.enumCodec(Unit.class)));
 
     private static <T> DataComponentType<T> register(String name, Consumer<DataComponentType.Builder<T>> customizer) {
         var builder = DataComponentType.<T>builder();
