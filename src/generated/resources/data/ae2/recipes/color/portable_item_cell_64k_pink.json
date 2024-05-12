@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "pink",
+  "dye": {
+    "tag": "c:dyes/pink"
+  },
+  "input": {
+    "item": "ae2:portable_item_cell_64k"
+  },
+  "output": {
+    "id": "ae2:portable_item_cell_64k"
+  }
+}

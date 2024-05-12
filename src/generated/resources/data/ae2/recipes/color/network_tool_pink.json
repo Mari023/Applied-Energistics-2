@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "pink",
+  "dye": {
+    "tag": "c:dyes/pink"
+  },
+  "input": {
+    "item": "ae2:network_tool"
+  },
+  "output": {
+    "id": "ae2:network_tool"
+  }
+}

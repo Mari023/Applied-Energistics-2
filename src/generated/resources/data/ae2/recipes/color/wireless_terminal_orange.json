@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "orange",
+  "dye": {
+    "tag": "c:dyes/orange"
+  },
+  "input": {
+    "item": "ae2:wireless_terminal"
+  },
+  "output": {
+    "id": "ae2:wireless_terminal"
+  }
+}

@@ -32,6 +32,8 @@ import appeng.recipes.game.StorageCellUpgradeRecipe;
 import appeng.recipes.game.StorageCellUpgradeRecipeSerializer;
 import appeng.recipes.handlers.ChargerRecipe;
 import appeng.recipes.handlers.ChargerRecipeSerializer;
+import appeng.recipes.handlers.ColorRecipe;
+import appeng.recipes.handlers.ColorRecipeSerializer;
 import appeng.recipes.handlers.InscriberRecipe;
 import appeng.recipes.handlers.InscriberRecipeSerializer;
 import appeng.recipes.mattercannon.MatterCannonAmmo;
@@ -53,6 +55,7 @@ public final class InitRecipeSerializers {
         register(registry, TransformRecipe.TYPE_ID, TransformRecipeSerializer.INSTANCE);
         register(registry, ChargerRecipe.TYPE_ID, ChargerRecipeSerializer.INSTANCE);
         register(registry, StorageCellUpgradeRecipe.SERIALIZER_ID, StorageCellUpgradeRecipeSerializer.INSTANCE);
+        register(registry, ColorRecipe.TYPE_ID, ColorRecipeSerializer.INSTANCE);
     }
 
     private static void register(Registry<RecipeSerializer<?>> registry, ResourceLocation id,

@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "white",
+  "dye": {
+    "tag": "c:dyes/white"
+  },
+  "input": {
+    "item": "ae2:portable_item_cell_1k"
+  },
+  "output": {
+    "id": "ae2:portable_item_cell_1k"
+  }
+}

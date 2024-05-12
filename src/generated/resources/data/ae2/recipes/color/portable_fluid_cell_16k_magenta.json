@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "magenta",
+  "dye": {
+    "tag": "c:dyes/magenta"
+  },
+  "input": {
+    "item": "ae2:portable_fluid_cell_16k"
+  },
+  "output": {
+    "id": "ae2:portable_fluid_cell_16k"
+  }
+}

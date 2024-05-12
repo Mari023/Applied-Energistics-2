@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "yellow",
+  "dye": {
+    "tag": "c:dyes/yellow"
+  },
+  "input": {
+    "item": "ae2:network_tool"
+  },
+  "output": {
+    "id": "ae2:network_tool"
+  }
+}

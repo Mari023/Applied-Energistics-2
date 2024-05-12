@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "brown",
+  "dye": {
+    "tag": "c:dyes/brown"
+  },
+  "input": {
+    "item": "ae2:portable_fluid_cell_4k"
+  },
+  "output": {
+    "id": "ae2:portable_fluid_cell_4k"
+  }
+}

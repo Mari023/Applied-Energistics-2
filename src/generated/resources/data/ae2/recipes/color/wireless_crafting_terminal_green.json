@@ -1,0 +1,13 @@
+{
+  "type": "ae2:color",
+  "color": "green",
+  "dye": {
+    "tag": "c:dyes/green"
+  },
+  "input": {
+    "item": "ae2:wireless_crafting_terminal"
+  },
+  "output": {
+    "id": "ae2:wireless_crafting_terminal"
+  }
+}
