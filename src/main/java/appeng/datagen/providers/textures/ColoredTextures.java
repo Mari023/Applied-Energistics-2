@@ -54,12 +54,16 @@ public final class ColoredTextures {
                 .add(CompletableFuture.runAsync(r::safeRun, Util.backgroundExecutor()));
 
         for (AEColor color : AEColor.values()) {
-            var colorAmp = new ColorMap(color);
-            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal", color, colorAmp));
-            defer.accept(() -> generateColoredTexture(mtm, "wireless_crafting_terminal", color, colorAmp));
+            var colorMap = new ColorMap(color);
 
-            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal_led_lit", color, colorAmp));
-            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal_led_unlit", color, colorAmp));
+            defer.accept(() -> generateColoredTexture(mtm, "portable_cell_screen", color, colorMap));
+            defer.accept(() -> generateColoredTexture(mtm, "network_tool", color, colorMap));
+
+            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal", color, colorMap));
+            defer.accept(() -> generateColoredTexture(mtm, "wireless_crafting_terminal", color, colorMap));
+
+            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal_led_lit", color, colorMap));
+            defer.accept(() -> generateColoredTexture(mtm, "wireless_terminal_led_unlit", color, colorMap));
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
@@ -68,7 +72,7 @@ public final class ColoredTextures {
 
     public static void generateColoredTexture(TextureManager mtm, String name, AEColor color, ColorMap colorMap) {
         try {
-            NativeImage texture = generateTexture(mtm, name, colorMap);
+            NativeImage texture = coloredTexture(mtm, name, colorMap);
 
             appendTexture(mtm, texture, name + "_" + color.registryPrefix);
             texture.close();
@@ -76,7 +80,7 @@ public final class ColoredTextures {
         }
     }
 
-    public static NativeImage generateTexture(TextureManager mtm, String name, ColorMap colorMap) throws IOException {
+    public static NativeImage coloredTexture(TextureManager mtm, String name, ColorMap colorMap) throws IOException {
         NativeImage image = null;
         String template = "ae2:textures/item/uncolored/" + name + ".png";
 

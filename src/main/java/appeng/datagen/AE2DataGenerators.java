@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 
-import appeng.datagen.providers.textures.TexturesProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.RegistrySetBuilder;
 import net.minecraft.core.registries.Registries;
@@ -61,6 +60,7 @@ import appeng.datagen.providers.tags.BlockTagsProvider;
 import appeng.datagen.providers.tags.FluidTagsProvider;
 import appeng.datagen.providers.tags.ItemTagsProvider;
 import appeng.datagen.providers.tags.PoiTypeTagsProvider;
+import appeng.datagen.providers.textures.TexturesProvider;
 import appeng.init.worldgen.InitBiomes;
 import appeng.init.worldgen.InitDimensionTypes;
 import appeng.init.worldgen.InitStructures;
@@ -93,7 +93,7 @@ public class AE2DataGenerators {
         pack.addProvider(packOutput -> new BiomeTagsProvider(packOutput, registries, existingFileHelper));
         pack.addProvider(packOutput -> new PoiTypeTagsProvider(packOutput, registries, existingFileHelper));
 
-        //Textures
+        // Textures
         pack.addProvider(packOutput -> new TexturesProvider(packOutput, existingFileHelper));
 
         // Models
