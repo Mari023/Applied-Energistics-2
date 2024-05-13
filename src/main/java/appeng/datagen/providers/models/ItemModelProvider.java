@@ -1,7 +1,5 @@
 package appeng.datagen.providers.models;
 
-import static appeng.core.AppEng.makeId;
-
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
@@ -94,17 +92,6 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
         flatSingleLayer(AEItems.NAME_PRESS, "item/name_press");
         flatSingleLayer(AEItems.NETHER_QUARTZ_KNIFE, "item/nether_quartz_cutting_knife");
         flatSingleLayer(AEItems.NETHER_QUARTZ_WRENCH, "item/nether_quartz_wrench");
-        flatSingleLayer(AEItems.NETWORK_TOOL, "item/network_tool");
-        portableCell(AEItems.PORTABLE_ITEM_CELL1K, "item", "1k");
-        portableCell(AEItems.PORTABLE_ITEM_CELL4K, "item", "4k");
-        portableCell(AEItems.PORTABLE_ITEM_CELL16K, "item", "16k");
-        portableCell(AEItems.PORTABLE_ITEM_CELL64K, "item", "64k");
-        portableCell(AEItems.PORTABLE_ITEM_CELL256K, "item", "256k");
-        portableCell(AEItems.PORTABLE_FLUID_CELL1K, "fluid", "1k");
-        portableCell(AEItems.PORTABLE_FLUID_CELL4K, "fluid", "4k");
-        portableCell(AEItems.PORTABLE_FLUID_CELL16K, "fluid", "16k");
-        portableCell(AEItems.PORTABLE_FLUID_CELL64K, "fluid", "64k");
-        portableCell(AEItems.PORTABLE_FLUID_CELL256K, "fluid", "256k");
         flatSingleLayer(AEItems.PROCESSING_PATTERN, "item/processing_pattern");
         flatSingleLayer(AEItems.QUANTUM_ENTANGLED_SINGULARITY, "item/quantum_entangled_singularity");
         flatSingleLayer(AEItems.REDSTONE_CARD, "item/card_redstone");
@@ -125,12 +112,11 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
         flatSingleLayer(AEItemIds.GUIDE, "item/guide");
         flatSingleLayer(AEItems.VIEW_CELL, "item/view_cell");
         flatSingleLayer(AEItems.WIRELESS_BOOSTER, "item/wireless_booster");
-        flatSingleLayer(AEItems.WIRELESS_CRAFTING_TERMINAL, "item/wireless_crafting_terminal");
         flatSingleLayer(AEItems.WIRELESS_RECEIVER, "item/wireless_receiver");
-        flatSingleLayer(AEItems.WIRELESS_TERMINAL, "item/wireless_terminal");
         registerEmptyModel(AEItems.WRAPPED_GENERIC_STACK);
         registerEmptyModel(AEBlocks.CABLE_BUS);
         registerHandheld();
+        registerColoredItems();
     }
 
     private void storageCell(ItemDefinition<?> item, String background) {
@@ -141,18 +127,6 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
                 "layer0",
                 makeId(background))
                 .texture("layer1", "item/storage_cell_led");
-    }
-
-    private void portableCell(ItemDefinition<?> item, String housingType, String tier) {
-        String id = item.id().getPath();
-        singleTexture(
-                id,
-                mcLoc("item/generated"),
-                "layer0",
-                makeId("item/portable_cell_screen"))
-                .texture("layer1", "item/portable_cell_led")
-                .texture("layer2", "item/portable_cell_%s_housing".formatted(housingType))
-                .texture("layer3", "item/portable_cell_side_%s".formatted(tier));
     }
 
     private void registerHandheld() {
@@ -223,6 +197,90 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
                 flatSingleLayer(id, "item/paint_ball_shimmer");
             }
         }
+    }
+
+    private void registerColoredItems() {
+        terminal(AEItems.WIRELESS_TERMINAL);
+        terminal(AEItems.WIRELESS_CRAFTING_TERMINAL);
+
+        portableCell(AEItems.PORTABLE_ITEM_CELL1K, "item", "1k");
+        portableCell(AEItems.PORTABLE_ITEM_CELL4K, "item", "4k");
+        portableCell(AEItems.PORTABLE_ITEM_CELL16K, "item", "16k");
+        portableCell(AEItems.PORTABLE_ITEM_CELL64K, "item", "64k");
+        portableCell(AEItems.PORTABLE_ITEM_CELL256K, "item", "256k");
+        portableCell(AEItems.PORTABLE_FLUID_CELL1K, "fluid", "1k");
+        portableCell(AEItems.PORTABLE_FLUID_CELL4K, "fluid", "4k");
+        portableCell(AEItems.PORTABLE_FLUID_CELL16K, "fluid", "16k");
+        portableCell(AEItems.PORTABLE_FLUID_CELL64K, "fluid", "64k");
+        portableCell(AEItems.PORTABLE_FLUID_CELL256K, "fluid", "256k");
+
+        coloredItem(AEItems.NETWORK_TOOL);
+    }
+
+    public void coloredItem(ItemDefinition<?> item) {
+        String id = item.id().getPath();
+
+        ItemModelBuilder builder = coloredItem(id, id, AEColor.TRANSPARENT);
+
+        for (AEColor color : AEColor.values()) {
+            builder = builder.override().predicate(InitItemModelsProperties.COLOR_ID, color.ordinal())
+                    .model(coloredItem(id + "_%s", id, color)).end();
+        }
+    }
+
+    private ItemModelBuilder coloredItem(String path, String itemName, AEColor color) {
+        String c = color.registryPrefix;
+        return withExistingParent(path.formatted(c), mcLoc("item/generated"))
+                .texture("layer0", makeId("item/%s".formatted(itemName)))
+                .texture("layer1", "item/%s_%s".formatted(itemName, c));
+    }
+
+    public void terminal(ItemDefinition<?> item) {
+        String id = item.id().getPath();
+
+        ItemModelBuilder builder = terminal(id, id, AEColor.TRANSPARENT, "lit");
+
+        for (AEColor color : AEColor.values()) {
+            var unlit = terminal(id + "_%s_%s", id, color, "unlit");
+            var lit = terminal(id + "_%s_%s", id, color, "lit");
+
+            builder = builder.override().predicate(InitItemModelsProperties.COLOR_ID, color.ordinal())
+                    .predicate(InitItemModelsProperties.LED_STATUS_ID, 0)
+                    .model(unlit)
+                    .end();
+            builder = builder.override().predicate(InitItemModelsProperties.COLOR_ID, color.ordinal())
+                    .predicate(InitItemModelsProperties.LED_STATUS_ID, 1)
+                    .model(lit)
+                    .end();
+        }
+    }
+
+    private ItemModelBuilder terminal(String path, String itemName, AEColor color, String ledStatus) {
+        String c = color.registryPrefix;
+        return withExistingParent(path.formatted(c, ledStatus), mcLoc("item/generated"))
+                .texture("layer0", makeId("item/%s".formatted(itemName)))
+                .texture("layer1", "item/%s_%s".formatted(itemName, c))
+                .texture("layer2", "item/wireless_terminal_led_%s_%s".formatted(c, ledStatus));
+    }
+
+    public void portableCell(ItemDefinition<?> item, String housingType, String tier) {
+        String id = item.id().getPath();
+
+        ItemModelBuilder builder = portableCell(id, housingType, tier, AEColor.TRANSPARENT);
+
+        for (AEColor color : AEColor.values()) {
+            builder = builder.override().predicate(InitItemModelsProperties.COLOR_ID, color.ordinal()).model(
+                    portableCell(id + "_%s", housingType, tier, color)).end();
+        }
+    }
+
+    private ItemModelBuilder portableCell(String path, String housingType, String tier, AEColor color) {
+        String c = color.registryPrefix;
+        return withExistingParent(path.formatted(c), mcLoc("item/generated"))
+                .texture("layer0", "item/portable_cell_screen_%s".formatted(c))
+                .texture("layer1", "item/portable_cell_led")
+                .texture("layer2", "item/portable_cell_%s_housing".formatted(housingType))
+                .texture("layer3", "item/portable_cell_side_%s".formatted(tier));
     }
 
     private ItemModelBuilder flatSingleLayer(ItemDefinition<?> item, String texture) {
