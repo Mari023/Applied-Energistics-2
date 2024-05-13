@@ -260,7 +260,7 @@ public class ItemModelProvider extends net.neoforged.neoforge.client.model.gener
         return withExistingParent(path.formatted(c, ledStatus), mcLoc("item/generated"))
                 .texture("layer0", makeId("item/%s".formatted(itemName)))
                 .texture("layer1", "item/%s_%s".formatted(itemName, c))
-                .texture("layer2", "item/wireless_terminal_led_%s_%s".formatted(c, ledStatus));
+                .texture("layer2", "item/wireless_terminal_led_%s_%s".formatted(ledStatus, c));
     }
 
     public void portableCell(ItemDefinition<?> item, String housingType, String tier) {
