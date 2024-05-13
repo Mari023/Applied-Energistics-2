@@ -1,6 +1,111 @@
 {
   "parent": "minecraft:item/generated",
+  "overrides": [
+    {
+      "model": "ae2:item/network_tool_white",
+      "predicate": {
+        "ae2:color": 0.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_orange",
+      "predicate": {
+        "ae2:color": 1.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_magenta",
+      "predicate": {
+        "ae2:color": 2.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_light_blue",
+      "predicate": {
+        "ae2:color": 3.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_yellow",
+      "predicate": {
+        "ae2:color": 4.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_lime",
+      "predicate": {
+        "ae2:color": 5.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_pink",
+      "predicate": {
+        "ae2:color": 6.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_gray",
+      "predicate": {
+        "ae2:color": 7.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_light_gray",
+      "predicate": {
+        "ae2:color": 8.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_cyan",
+      "predicate": {
+        "ae2:color": 9.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_purple",
+      "predicate": {
+        "ae2:color": 10.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_blue",
+      "predicate": {
+        "ae2:color": 11.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_brown",
+      "predicate": {
+        "ae2:color": 12.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_green",
+      "predicate": {
+        "ae2:color": 13.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_red",
+      "predicate": {
+        "ae2:color": 14.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_black",
+      "predicate": {
+        "ae2:color": 15.0
+      }
+    },
+    {
+      "model": "ae2:item/network_tool_fluix",
+      "predicate": {
+        "ae2:color": 16.0
+      }
+    }
+  ],
   "textures": {
-    "layer0": "ae2:item/network_tool"
+    "layer0": "ae2:item/network_tool",
+    "layer1": "ae2:item/network_tool_fluix"
   }
 }

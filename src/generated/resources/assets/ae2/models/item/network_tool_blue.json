@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "ae2:item/network_tool",
+    "layer1": "ae2:item/network_tool_blue"
+  }
+}
