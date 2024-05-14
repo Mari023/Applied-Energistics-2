@@ -45,7 +45,13 @@ public record ColorRecipe(Ingredient input, Ingredient dye, AEColor color, ItemS
 
     @Override
     public boolean matches(CraftingContainer inv, Level level) {
-        return inv.hasAnyMatching(input) && inv.hasAnyMatching(dye) && inv.getItems().size() == 2;
+        int items = 0;
+        for (var item : inv.getItems()) {
+            if (!item.isEmpty()) {
+                items++;
+            }
+        }
+        return inv.hasAnyMatching(input) && inv.hasAnyMatching(dye) && items == 2;
     }
 
     @Override
@@ -62,7 +68,7 @@ public record ColorRecipe(Ingredient input, Ingredient dye, AEColor color, ItemS
 
     @Override
     public boolean canCraftInDimensions(int width, int height) {
-        return width > 1 || height > 1;
+        return width * height >= 2;
     }
 
     @Override
