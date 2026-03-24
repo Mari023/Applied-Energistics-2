@@ -171,7 +171,7 @@ public abstract class P2PTunnelPart<T extends P2PTunnelPart<T>> extends AEBasePa
             return true;
         }
 
-        if (isClientSide() || hand == InteractionHand.OFF_HAND) {
+        if (isClientSide() /*|| hand == InteractionHand.OFF_HAND*/) {
             return false;
         }
 

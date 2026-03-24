@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
 import net.minecraft.ChatFormatting;
@@ -317,6 +318,11 @@ public class MemoryCardItem extends AEBaseItem implements IMemoryCard {
         if (InteractionUtil.isInAlternateUseMode(context.getPlayer())) {
             Level level = context.getLevel();
             if (!level.isClientSide()) {
+                var result = level.getBlockState(context.getClickedPos()).useItemOn(context.getItemInHand(), level, context.getPlayer(), context.getHand(),
+                        new BlockHitResult(context.getClickLocation(), context.getClickedFace(), context.getClickedPos(), false));
+                if (result.consumesAction()) {
+                    return result.result();
+                }
                 this.clearCard(context.getPlayer(), context.getLevel(), context.getHand());
             }
             return InteractionResult.sidedSuccess(level.isClientSide());
