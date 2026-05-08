@@ -16,6 +16,7 @@ import appeng.core.AppEng;
 import appeng.core.definitions.AEItems;
 import appeng.core.definitions.ItemDefinition;
 import appeng.items.tools.powered.AbstractPortableCell;
+import net.neoforged.fml.ModList;
 
 /**
  * Registry of {@link HotkeyAction}
@@ -56,7 +57,9 @@ public class HotkeyActions {
      */
     public static void register(ItemLike item, InventoryHotkeyAction.Opener opener, String id) {
         register(new InventoryHotkeyAction(item, opener), id);
-        register(new CuriosHotkeyAction(item, opener), id);
+        if (ModList.get().isLoaded("curios")) {
+            register(new CuriosHotkeyAction(item, opener), id);
+        }
     }
 
     /**

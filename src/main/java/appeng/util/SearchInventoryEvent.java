@@ -5,6 +5,7 @@ import java.util.List;
 
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
@@ -31,14 +32,16 @@ public class SearchInventoryEvent extends PlayerEvent {
         NeoForge.EVENT_BUS.addListener((SearchInventoryEvent event) -> {
             event.getStacks().addAll(event.getEntity().getInventory().getNonEquipmentItems());
         });
-        NeoForge.EVENT_BUS.addListener((SearchInventoryEvent event) -> {
-            var cap = event.getEntity().getCapability(CuriosCapability.ITEM_HANDLER);
-            if (cap == null)
-                return;
-            for (int i = 0; i < cap.size(); i++) {
-                event.getStacks().add(cap.getResource(i).toStack());
-            }
-        });
+        if (ModList.get().isLoaded("curios")) {
+            NeoForge.EVENT_BUS.addListener((SearchInventoryEvent event) -> {
+                var cap = event.getEntity().getCapability(CuriosCapability.ITEM_HANDLER);
+                if (cap == null)
+                    return;
+                for (int i = 0; i < cap.size(); i++) {
+                    event.getStacks().add(cap.getResource(i).toStack());
+                }
+            });
+        }
     }
 
     public static List<ItemStack> getItems(Player player) {
